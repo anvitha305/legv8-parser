@@ -7,6 +7,16 @@ use nom::{
   branch::{alt},
   bytes::complete::{tag, is_not},
 };
+pub fn main(){
+  //print!("{:#?}", parse("[x1, x3]"))
+  dtype("ldus[x1, x3]")
+}
+pub fn dtype(input: &str) {
+  let mut instr: IResult<&str, &str> = alt((tag("ldur"), tag("stur")))(input);
+  print!("{:#?}", instr.as_mut().unwrap_or(&mut ("","")).0);
+  print!("{:#?}", instr.as_mut());
+}
+
 // recognizes brackets for d-type instructions 
 pub fn brack(input: &str) -> IResult<&str, &str> {
     delimited(char('['), is_not("]"), char(']'))(input)
@@ -24,8 +34,7 @@ pub fn comment(input: &str) -> IResult<&str, &str> {
 }
 
 // recognizes values we know immediately
-pub fn imm(input: &str) -> IResult<&str, u16> {
-    map_res(
+pub fn imm(input: &str) -> IResult<&str, &str> {
       preceded(
         tag("#"),
         recognize(
@@ -33,13 +42,11 @@ pub fn imm(input: &str) -> IResult<&str, u16> {
             terminated(one_of("0123456789"), many0(char('_')))
           )
         )
-      ),
-      |out: &str| u16::from_str_radix(&str::replace(&out, "_", ""), 10)
-    )(input)
+      )(input)
 }
 
 // recognizes one of the numbered registers
-pub fn numreg(input: &str) -> IResult<&str, &str> {
+fn numreg(input: &str) -> IResult<&str, &str> {
     recognize(
       pair(
         tag("x"), 
@@ -53,7 +60,7 @@ pub fn numreg(input: &str) -> IResult<&str, &str> {
 }
 
 // recognizes one of the named registers and converts it to the numbered registers
-pub fn altreg(input: &str) -> IResult<&str, &str> {
+fn altreg(input: &str) -> IResult<&str, &str> {
     alt((
       value("x16", tag("ip0")),
       value("x17", tag("ip0")),
@@ -96,4 +103,6 @@ pub struct Branch{
   pub name: String,
   pub inst: Vec<Instruction>
 }
-//pub fn parse(code &str)->Option<Vec<Instruction>>{}
+pub fn parse(code: &str)->IResult<&str,&str>{
+  alt((reg, imm, brack))(code)
+}

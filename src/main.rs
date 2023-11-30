@@ -121,6 +121,8 @@ pub fn comment(input: &str) -> IResult<&str, &str> {
     )(input)
 }
 
+
+
 // recognizes values we know immediately
 pub fn imm(input: &str) -> IResult<&str, &str> {
       preceded(
@@ -192,5 +194,10 @@ pub struct Branch{
   pub inst: Vec<Instruction>
 }
 pub fn parse(code: &str)->IResult<&str,&str>{
-  alt((reg, comment, imm, brack, rtype))(code)
+  let lines = code.split("\n");
+  for line in lines {
+    println!(line)
+    println!(alt((reg, comment, imm, brack, rtype))(line))
+  }
+  
 }

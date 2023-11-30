@@ -8,13 +8,8 @@ use nom::{
   bytes::complete::{tag, is_not},
 };
 pub fn main(){
-  //print!("{:#?}", parse("[x1, x3]"))
-  dtype("ldus[x1, x3]")
-}
-pub fn dtype(input: &str) {
-  let mut instr: IResult<&str, &str> = alt((tag("ldur"), tag("stur")))(input);
-  print!("{:#?}", instr.as_mut().unwrap_or(&mut ("","")).0);
-  print!("{:#?}", instr.as_mut());
+  print!("{:#?}", parse("//ldur [x1, x3]"))
+  //dtype("ldus[x1, x3]")
 }
 
 // recognizes brackets for d-type instructions 
@@ -104,5 +99,5 @@ pub struct Branch{
   pub inst: Vec<Instruction>
 }
 pub fn parse(code: &str)->IResult<&str,&str>{
-  alt((reg, imm, brack))(code)
+  alt((reg, comment, imm, brack))(code)
 }

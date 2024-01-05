@@ -3,12 +3,12 @@ use nom::{
   multi::{many0, many1, separated_list1},
   combinator::{verify, value, recognize, map_res},
   sequence::{preceded, pair, delimited, terminated},
-  character::complete::{char, digit1, one_of, multispace1},
+  character::complete::{char, digit1, one_of, multispace1, alphanumeric0, alpha1},
   branch::alt,
   bytes::complete::{tag, is_not, tag_no_case}, Parser,
 };
 pub fn main(){
-  print!("{:#?}", d_inst("ldur x2 [x3, #5]"))
+  print!("{:#?}", b_inst("b branch"))
   //dtype("ldus[x1, x3]")
 }
 
@@ -56,6 +56,25 @@ pub fn d_inst(input: &str) -> IResult<&str, Instruction>{
   let (input, _) = alt((tag(", "), tag(",")))(input)?;
   let (input, dest) = imm(input)?;
   Ok((input, Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:dest, imm:0, bname:"".to_string()}))
+}
+
+pub fn b_inst(input:&str) -> IResult<&str, Instruction>{
+  let (input, instr) = btype(input)?;
+  let (input, _) = tag(" ")(input)?;
+  let(input, branch) = branch_name(input)?;
+  Ok((input, Instruction{typ:Typ::B, instr:instr.to_string(), regs:vec![], addr:0, imm:0, bname:branch.to_string()}))
+}
+
+pub fn cb_inst(input: &str) -> IResult<&str, Instruction>{
+  let (input, instr) = cbtype(input)?;
+  let (input, _) = tag(" ")(input)?;
+  let(input, branch) = branch_name(input)?;
+  Ok((input, Instruction{typ:Typ::C, instr:instr.to_string(), regs:vec![], addr:0, imm:0, bname:branch.to_string()}))
+}
+
+// recognizes branch names
+pub fn branch_name(input: &str)-> IResult<&str, &str>{
+  terminated(alpha1, alphanumeric0)(input)
 }
 
 // recognizes r-type operators/instructions for integers
@@ -229,7 +248,7 @@ pub fn parseall(input:&str)-> IResult<&str, &str>{
 // C: CB-type, conditional branching
 // M: IM-type, moving shifted immediate to register
 #[derive(Debug)]
-pub enum Typ {R, I, D, B, C, M}
+pub enum Typ {R, I, D, B, C}
 
 #[derive(Debug)]
 pub struct Instruction<'a>{

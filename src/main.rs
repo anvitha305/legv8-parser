@@ -54,8 +54,8 @@ pub fn d_inst(input: &str) -> IResult<&str, Instruction>{
     return Ok((input, Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:0, imm:0, bname:"".to_string()}))
   }
   let (input, _) = alt((tag(", "), tag(",")))(input)?;
-  
-  Ok((input, Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:0, imm:0, bname:"".to_string()}))
+  let (input, dest) = imm(input)?;
+  Ok((input, Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:dest, imm:0, bname:"".to_string()}))
 }
 
 // recognizes r-type operators/instructions for integers

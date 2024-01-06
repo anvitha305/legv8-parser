@@ -27,10 +27,10 @@ MOV X1, X20 // second swap parameter is j
 BL swap
 SUBI X20, X20, #1 // j –= 1
 B for2tst // branch to test of inner loop
-exit2: 
+exit2:
 ADDI X19, X19, #1 // i += 1
 B for1tst // branch to test of outer loop
-exit1: 
+exit1:
 STUR X19, [SP,#0] // restore X19 from stack
 STUR X20, [SP,#8] // restore X20 from stack
 STUR X21,[SP,#16] // restore X21 from stack

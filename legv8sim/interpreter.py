@@ -37,7 +37,9 @@ def parse():
                 raise Exception("issue with running instruction: " + line)
             else:
                 ir[branch].append(res)
-    print(ir)
+    return ir
+
+def interpret():
+    print("interpreting...")
 if __name__ == "__main__":
-    #print(lsim.d_inst("LDUR X3, [X1, #8]"))
-    parse()
+    print(parse())

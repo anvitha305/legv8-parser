@@ -16,6 +16,7 @@ pub fn rtype(input: &str) -> PyResult<IResult<&str, &str>> {
 pub fn itype(input: &str) -> PyResult<IResult<&str, &str>> {
     Ok(alt(
       (tag_no_case("addi"),
+      tag_no_case("cmpi"),
       tag_no_case("andi"),
       tag_no_case("andis"),
       tag_no_case("eori"),
@@ -67,6 +68,7 @@ pub fn intrtype(input: &str) -> IResult<&str, &str> {
     tag_no_case("and"),
     tag_no_case("ands"),
     tag_no_case("br"),
+    tag_no_case("cmp"),
     tag_no_case("eor"),
     tag_no_case("lsl"),
     tag_no_case("lsr"),

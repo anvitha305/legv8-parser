@@ -55,8 +55,8 @@ pub fn cbtype(input: &str) -> PyResult<IResult<&str, &str>> {
   // recognizes b-type instructions
   pub fn btype(input: &str) -> PyResult<IResult<&str, &str>> {
     Ok(alt(
-      (tag_no_case("b"),
-      tag_no_case("bl")))
+      (tag_no_case("bl"),
+      tag_no_case("b")))
       (input))
   }
 
@@ -84,6 +84,8 @@ pub fn intrtype(input: &str) -> IResult<&str, &str> {
     (tag_no_case("fadd"),
     tag_no_case("fcmpd"),
     tag_no_case("fdivd"),
+    tag_no_case("fmuld"),
+    tag_no_case("fsubd"),
     tag_no_case("fmuld"),
     tag_no_case("fsubd"),
     tag_no_case("mul"),
@@ -207,11 +209,12 @@ pub fn d_inst(input: &str) -> PyResult<String>{
       regs.append(&mut regs2);
       return Ok(Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:0, imm:0, bname:"".to_string()}.to_string())
     }
-    let (input, reg1) = preceded(tag("["), reg)(input).unwrap();
+    let (input, reg1) = preceded(preceded(alt((tag(", "), tag(","))), tag("[")), reg)(input).unwrap();
     let mut regs2 = vec![reg1];
     regs.append(&mut regs2);
-    let (_input, dest) = preceded(alt((tag(", "), tag(","))), preceded(imm, tag("]")))(input).unwrap();
-    Ok(Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:dest.parse().unwrap(), imm:0, bname:"".to_string()}.to_string())
+    let (_input, dest) = preceded(alt((tag(", "), tag(","))), terminated(imm, tag("]")))(input).unwrap();
+    //panic!("{:#?}", dest);
+    Ok(Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:dest, imm:0, bname:"".to_string()}.to_string())
   }
 
 #[pyfunction]

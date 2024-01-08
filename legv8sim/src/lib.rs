@@ -140,7 +140,7 @@ pub fn imm(input: &str) -> IResult<&str, u64> {
 }
 // recognizes branch names
 pub fn branch_name(input: &str)-> IResult<&str, &str>{
-  alt((alpha1,alphanumeric1))(input)
+  alt((alphanumeric1,alpha1))(input)
 }
 // Type of instruction being used.
 // R: R-type, register based operations
@@ -191,8 +191,12 @@ pub fn i_inst(input: &str) -> PyResult<String>{
 #[pyfunction]
 pub fn d_inst(input: &str) -> PyResult<String>{
     let Ok((input, instr)) = dtype(input).unwrap() else{panic!()};
-    let (input, mut regs)  = preceded(tag(" "), preceded(separated_list1(alt((tag(", "), tag(","))), reg), many0(tag(" "))))(input).unwrap();
+    let (input, reg1)  = preceded(tag(" "), reg)(input).unwrap();
+    let mut regs = vec![reg1];
     if instr.to_lowercase() == "mov" {
+      let (_input, reg2) = preceded(alt((tag(", "), tag(","))), reg)(input).unwrap();
+      let mut regs2 = vec![reg2];
+      regs.append(&mut regs2);
       return Ok(Instruction{typ:Typ::D, instr:instr.to_string(), regs:regs, addr:0, imm:0, bname:"".to_string()}.to_string())
   
     }

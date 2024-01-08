@@ -5,8 +5,8 @@ B.GT else
 BR X30
 else:
 ADD X9,X0,X3
-SUB SP, SP, #16
-SUB X0, X0, #1
+SUBI SP, SP, #16
+SUBI X0, X0, #1
 BL fact
 LDUR X9,[SP,#0]
 LDUR X30,[SP,#8]

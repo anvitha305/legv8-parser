@@ -75,7 +75,6 @@ def interpretOne(instruction, regs="", flags=""):
         if parsed['instr']=="mov":
             try:
                 rt, rn = parsed['regs']
-                addr = parsed['addr']
                 regs[rt] = regs[rn]
             except Exception as e:
                 raise Exception("errror parsing load instruction - invalid or incorrect number of operands.") 
@@ -125,7 +124,7 @@ def interpretOne(instruction, regs="", flags=""):
                     next_instr = (parsed["bname"], 0)
             except Exception as e:
                  raise Exception("cannot adjust the branch address...")
-        if parsed['instr'] != "cbnz":
+        if parsed['instr'] == "cbnz":
             try:
                 if len(parsed['regs'])!=1:
                     raise Exception("incorrect args...")
@@ -151,16 +150,14 @@ def interpretOne(instruction, regs="", flags=""):
             try:
                 dest, s1, s2 = parsed['regs']
                 regs[dest] = regs[s1]+regs[s2]
-                if type(regs[dest])!=float:
-                    raise Exception("non float result...")
+                regs[dest] = float(regs[dest])
             except Exception as e:
                 print("Error interpreting instruction "+instruction[12:-1]+" - invalid number/type of operands")
         if parsed["instr"] == "fsubd":
             try:
                 dest, s1, s2 = parsed['regs']
                 regs[dest] = regs[s1]-regs[s2]
-                if type(regs[dest])!=float:
-                    raise Exception("non float result...")
+                regs[dest] = float(regs[dest])
             except Exception as e:
                 print("Error interpreting instruction "+instruction[12:-1]+" - invalid number/type of operands")
         if parsed["instr"] == "fdivd":
@@ -175,8 +172,7 @@ def interpretOne(instruction, regs="", flags=""):
             try:
                 dest, s1, s2 = parsed['regs']
                 regs[dest] = regs[s1]*regs[s2]
-                if type(regs[dest])!=float:
-                    raise Exception("non float result...")
+                regs[dest] = float(regs[dest])
             except Exception as e:
                 print("Error interpreting instruction "+instruction[12:-1]+" - invalid number/type of operands")
         if parsed['instr']=="umulh":
@@ -268,7 +264,7 @@ def interpretOne(instruction, regs="", flags=""):
                 print("Error interpreting instruction "+instruction[12:-1]+" - invalid number/type of operands")
         if parsed["instr"] == "br":
             try:
-                if len(parsed['regs']!=1):
+                if len(parsed['regs'])!=1:
                     raise Exception("bad!!!")
                 reg = parsed['regs'][0]
                 if reg == "x30":
@@ -276,7 +272,7 @@ def interpretOne(instruction, regs="", flags=""):
                 else:
                     raise Exception("make sure you br with the LR/PC!")
             except Exception as e:
-                print("Error interpreting instruction "+instruction[12:-1]+" - invalid number/type of operands")
+                print("Error interpreting instruction "+instruction[12:-1]+" " + str(e))
         if parsed["instr"]=="cmp":
             try:
                 rn, rm = parsed["regs"]
@@ -346,7 +342,7 @@ def interpretOne(instruction, regs="", flags=""):
                 print("Error interpreting instruction "+instruction[12:-1]+" - invalid number/type of operands")
         if parsed["instr"]=="cmpi":
             try:
-                if len(parsed['regs']!=1):
+                if len(parsed['regs'])!=1:
                     raise Exception("bad!!!")
                 rn = parsed["regs"][0]
                 res = rn-parsed["imm"]

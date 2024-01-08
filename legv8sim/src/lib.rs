@@ -3,8 +3,7 @@ use nom::{
     IResult,
     multi::{many0, many1, separated_list1},
     combinator::{verify, value, recognize, map_res},
-    sequence::{preceded, pair, terminated},
-    character::complete::{char, digit1, one_of, alphanumeric0, alpha1},
+    sequence::{preceded, pair, terminated},    character::complete::{char, digit1, one_of, alphanumeric1, alpha1},
     branch::alt,
     bytes::complete::{tag, tag_no_case}, Parser,
   };
@@ -30,7 +29,6 @@ pub fn itype(input: &str) -> PyResult<IResult<&str, &str>> {
 pub fn dtype(input: &str) -> PyResult<IResult<&str, &str>> {
     Ok(alt(
       (tag_no_case("ldur"),
-      tag_no_case("ldursw"),
       tag_no_case("stur"),
       tag_no_case("lda"),
       tag_no_case("mov")))
@@ -84,8 +82,6 @@ pub fn intrtype(input: &str) -> IResult<&str, &str> {
     (tag_no_case("fadd"),
     tag_no_case("fcmpd"),
     tag_no_case("fdivd"),
-    tag_no_case("fmuld"),
-    tag_no_case("fsubd"),
     tag_no_case("fmuld"),
     tag_no_case("fsubd"),
     tag_no_case("mul"),
@@ -144,10 +140,8 @@ pub fn imm(input: &str) -> IResult<&str, u64> {
 }
 // recognizes branch names
 pub fn branch_name(input: &str)-> IResult<&str, &str>{
-    terminated(alpha1, alphanumeric0)(input)
-  }
-  
-
+  alt((alpha1,alphanumeric1))(input)
+}
 // Type of instruction being used.
 // R: R-type, register based operations
 // I: I-type, immediate instructions working with an immediate memory address.

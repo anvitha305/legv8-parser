@@ -3,7 +3,7 @@ use nom::{
     IResult,
     multi::{many0, many1, separated_list1},
     combinator::{verify, value, recognize, map_res},
-    sequence::{preceded, pair, terminated},    character::complete::{char, digit1, one_of, alphanumeric1, alpha1},
+    sequence::{preceded, pair, terminated},    character::complete::{char, digit1, one_of, alphanumeric0, alpha1},
     branch::alt,
     bytes::complete::{tag, tag_no_case}, Parser,
   };
@@ -140,7 +140,7 @@ pub fn imm(input: &str) -> IResult<&str, u64> {
 }
 // recognizes branch names
 pub fn branch_name(input: &str)-> IResult<&str, &str>{
-  alt((alphanumeric1,alpha1))(input)
+  alt((alphanumeric0,alpha1))(input)
 }
 // Type of instruction being used.
 // R: R-type, register based operations
